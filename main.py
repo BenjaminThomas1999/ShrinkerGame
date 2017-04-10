@@ -9,7 +9,7 @@ def handleEvents():
 		if event.type == QUIT:
 			pygame.quit()
 			sys.exit()
-		
+
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_LEFT or event.key == pygame.K_a:
 				player.moving["left"] = True
@@ -25,7 +25,7 @@ def handleEvents():
 				player.shrinking = True
 			elif event.key == pygame.K_j:
 				player.heal(100)
-				
+	
 		elif event.type == pygame.KEYUP:
 			if event.key == pygame.K_LEFT or event.key == pygame.K_a:
 				player.moving["left"] = False
@@ -39,18 +39,16 @@ def handleEvents():
 				player.growing = False
 			elif event.key == pygame.K_LSHIFT:
 				player.shrinking = False
-
 pygame.init()
 
 windowSurface = pygame.display.set_mode((constant.WIDTH, constant.HEIGHT), 0, 32)
 pygame.display.set_caption('Hop Hop Hop')
 player = entity.Player([500, 0], 60)
 
-
 while True: #game loop
 	handleEvents()
-	
 	windowSurface.fill(constant.WHITE)	
+	
 	levels.update(player)
 	levels.draw(windowSurface)
 	

@@ -17,7 +17,6 @@ class Player(object):
 		self.friction = 0.02
 		self.maxHealth = 790
 		self.health = self.maxHealth
-	
 		
 	def gravityAcc(self):
 		return constant.GRAVITY*self.size**2
@@ -152,7 +151,7 @@ class Wall(object):
 			if player.position[0] < self.position[0]+self.width and player.position[0]+player.size > self.position[0]:
 				
 				if player.position[1]+player.size < self.position[1]+10:
-					player.position[1] = self.position[0]-player.size
+					player.position[1] = self.position[1]-player.size
 					player.velocity[1] = 0
 					player.moving["down"] = False
 				
@@ -174,7 +173,71 @@ class Wall(object):
 	
 	def draw(self, windowSurface):
 		pygame.draw.rect(windowSurface, constant.BLACK, (self.position[0], self.position[1], self.width, self.height))
+
+
+class Box(object):
+	def __init__(self, startPosition, size):
+		self.position = startPosition
+		self.size = size
+		self.width = size
+		self.height = size
+		self.playerTouching = {"left":False, "right":False, "up":False, "down":False}
 		
+	def update(self, player):
+		self.playerTouching = {"left":False, "right":False, "up":False, "down":False}
+		
+		if player.position[1]+player.size > self.position[1] and player.position[1] < self.position[1]+self.height:
+			if player.position[0] < self.position[0]+self.width and player.position[0]+player.size > self.position[0]:
+				
+				if player.position[1]+player.size < self.position[1]+5:
+					self.playerTouching["down"] = True
+					self.position[1] = player.position[1]+player.size
+				
+				elif player.position[0] > self.position[0]+self.width-5:
+					self.playerTouching["left"] = True
+					self.position[0] = player.position[0]-self.width
+				
+				elif player.position[0]+player.size < self.position[0]+5:
+					self.playerTouching["right"] = True
+					self.position[0] = player.position[0]+player.size
+					
+				elif player.position[1] > self.position[1]+self.height-5:
+					self.position[1] = player.position[1]-self.height
+					self.playerTouching["up"] = True
+
+
+		if self.position[1]+self.size > constant.HEIGHT: 
+			self.position[1] = constant.HEIGHT - self.size
+			player.position[1] = self.position[1]-player.size
+			player.velocity[1] = 0
+			player.moving["down"] = False
+		
+		elif self.position[1] < 20:
+			self.position[1] = 20
+			player.position[1] = self.position[1]+self.height
+			player.velocity[1] = 0
+			player.moving["up"] = False
+		
+		if self.position[0]+self.size > constant.WIDTH:
+			self.position[0] = constant.WIDTH-self.size
+			player.position[0] = self.position[0]-player.size
+			player.velocity[0] = 0
+			player.moving["right"] = False
+			
+		elif self.position[0] < 0:
+			self.position[0] = 0
+			player.position[0] = self.position[0]+self.width
+			player.velocity[0] = 0
+			player.moving["left"] = False
+			
+			
+		
+	def draw(self, windowSurface):
+		pygame.draw.rect(windowSurface, constant.GREEN, (self.position[0], self.position[1], self.size, self.size))
+
+	
+	
+
 class Exit(object):
 	width = 30
 	height = 30
