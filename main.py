@@ -1,21 +1,10 @@
 import pygame, sys, time, random
 from pygame.locals import *
-import entity
 import constant
+import levels
+import entity
 
-pygame.init()
-
-windowSurface = pygame.display.set_mode((constant.WIDTH, constant.HEIGHT), 0, 32)
-pygame.display.set_caption('Hop Hop Hop')
-
-
-player = entity.Player([500, 0], 60)
-spikes = []
-for i in range(10):
-	spikes.append(entity.Spike([200+entity.Spike.width*i, constant.HEIGHT-entity.Spike.height]))
-wall = entity.Wall([200, 200], 100, 100)
-
-while True:
+def handleEvents():
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			pygame.quit()
@@ -50,17 +39,23 @@ while True:
 				player.growing = False
 			elif event.key == pygame.K_LSHIFT:
 				player.shrinking = False
+
+pygame.init()
+
+windowSurface = pygame.display.set_mode((constant.WIDTH, constant.HEIGHT), 0, 32)
+pygame.display.set_caption('Hop Hop Hop')
+player = entity.Player([500, 0], 60)
+
+
+while True: #game loop
+	handleEvents()
 	
-	windowSurface.fill(constant.WHITE)
-	
-	for spike in spikes:
-		spike.update(player)
-		spike.draw(windowSurface)
-	
+	windowSurface.fill(constant.WHITE)	
+	levels.update(player)
+	levels.draw(windowSurface)
 	
 	player.update()
 	player.draw(windowSurface)
-	wall.update(player)
-	wall.draw(windowSurface)
+	
 	pygame.display.update()
 	time.sleep(0.002)

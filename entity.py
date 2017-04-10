@@ -1,6 +1,5 @@
 import pygame
 import constant
-from datetime import datetime
 
 class Player(object):
 	def __init__(self, startPosition, size):		
@@ -128,15 +127,13 @@ class Spike(object):
 	def update(self, player):
 		if player.position[0]+player.size > self.position[0] and player.position[0] < self.position[0]+self.width:
 			if player.position[1]+player.size > self.position[1] and player.position[1] < self.position[1]+self.height:
-				player.damage(2)
-				
+				player.damage(4)
 				if player.position[0]+player.size < self.position[0]+self.width/2:
 					player.position[0] = self.position[0]-player.size
 					player.velocity[0] = 0
-				if player.position[0] > self.position[0]+self.width/2:
+				elif player.position[0] > self.position[0]+self.width/2:
 					player.position[0] = self.position[0]+self.width
 					player.velocity[0] = 0
-					
 				elif player.position[1]+player.size < self.position[1]+self.height/2:
 					player.position[1] = self.position[1]-player.size
 					player.velocity[1] = 0
@@ -149,9 +146,6 @@ class Wall(object):
 		self.position = position
 		self.width = width
 		self.height = height
-	
-	
-		
 	
 	def update(self, player):
 		if player.position[1]+player.size > self.position[1] and player.position[1] < self.position[1]+self.height:
@@ -180,3 +174,18 @@ class Wall(object):
 	
 	def draw(self, windowSurface):
 		pygame.draw.rect(windowSurface, constant.BLACK, (self.position[0], self.position[1], self.width, self.height))
+		
+class Exit(object):
+	width = 30
+	height = 30
+	
+	def __init__(self, position):
+		self.position = position
+	
+	def update(self, player):
+		if player.position[1]+player.size > self.position[1] and player.position[1] < self.position[1]+self.height:
+			if player.position[0] < self.position[0]+self.width and player.position[0]+player.size > self.position[0]:
+				print("Level Complete")
+		
+	def draw(self, windowSurface):
+		pygame.draw.rect(windowSurface, constant.LIGHT_GREY, (self.position[0], self.position[1], self.width, self.height))
