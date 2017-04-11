@@ -44,6 +44,7 @@ pygame.init()
 windowSurface = pygame.display.set_mode((constant.WIDTH, constant.HEIGHT), 0, 32)
 pygame.display.set_caption('Hop Hop Hop')
 player = entity.Player([500, 0], 60)
+wall = entity.Wall([200, 200], 100, 100)
 
 while True: #game loop
 	handleEvents()
@@ -54,6 +55,11 @@ while True: #game loop
 	
 	player.update()
 	player.draw(windowSurface)
+	
+	wall.update(player)
+	wall.draw(windowSurface)
+	
+	print(wall.rect.colliderect(player.rect))
 	
 	pygame.display.update()
 	time.sleep(0.002)

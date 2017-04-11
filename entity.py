@@ -6,7 +6,6 @@ class Player(object):
 		self.position = startPosition
 		self.velocity = [0, 0]
 		self.size = size
-		
 		self.moving = {"left":False, "right":False, "up":False, "down":False}
 		self.growing = False
 		self.shrinking = False
@@ -17,6 +16,8 @@ class Player(object):
 		self.friction = 0.02
 		self.maxHealth = 790
 		self.health = self.maxHealth
+		self.rect = pygame.Rect(self.position[0], self.position[1], self.size, self.size)
+
 		
 	def gravityAcc(self):
 		return constant.GRAVITY*self.size**2
@@ -93,7 +94,8 @@ class Player(object):
 			self.position[0] = 0
 			self.velocity[0] = 0
 			self.moving["left"] = False
-		
+		self.rect = pygame.Rect(self.position[0], self.position[1], self.size, self.size)
+
 
 		
 	def damage(self, amount):
@@ -145,32 +147,31 @@ class Wall(object):
 		self.position = position
 		self.width = width
 		self.height = height
-	
+		self.rect = pygame.Rect(self.position[0], self.position[1], self.width, self.height)
+
 	def update(self, player):
-		if player.position[1]+player.size > self.position[1] and player.position[1] < self.position[1]+self.height:
-			if player.position[0] < self.position[0]+self.width and player.position[0]+player.size > self.position[0]:
+		if self.rect.colliderect(player.rect):
+			if player.position[1]+player.size < self.position[1]+10:
+				player.position[1] = self.position[1]-player.size
+				player.velocity[1] = 0
+				player.moving["down"] = False
+			
+			elif player.position[0] > self.position[0]+self.width-10:
+				player.position[0] = self.position[0]+self.width
+				player.velocity[0] = 0
+				player.moving["left"] = False
+			
+			elif player.position[0]+player.size < self.position[0]+10:
+				player.position[0] = self.position[0]-player.size
+				player.velocity[0] = 0
+				player.moving["right"] = False
 				
-				if player.position[1]+player.size < self.position[1]+10:
-					player.position[1] = self.position[1]-player.size
-					player.velocity[1] = 0
-					player.moving["down"] = False
+			elif player.position[1] > self.position[1]+self.height-10:
+				player.position[1] = self.position[1]+self.height
+				player.velocity[1] = player.gravityAcc()
+				player.moving["up"] = False
 				
-				elif player.position[0] > self.position[0]+self.width-10:
-					player.position[0] = self.position[0]+self.width
-					player.velocity[0] = 0
-					player.moving["left"] = False
-				
-				elif player.position[0]+player.size < self.position[0]+10:
-					player.position[0] = self.position[0]-player.size
-					player.velocity[0] = 0
-					player.moving["right"] = False
-					
-				elif player.position[1] > self.position[1]+self.height-10:
-					player.position[1] = self.position[1]+self.height
-					player.velocity[1] = player.gravityAcc()
-					player.moving["up"] = False
-				
-	
+
 	def draw(self, windowSurface):
 		pygame.draw.rect(windowSurface, constant.BLACK, (self.position[0], self.position[1], self.width, self.height))
 
@@ -184,26 +185,25 @@ class Box(object):
 		self.playerTouching = {"left":False, "right":False, "up":False, "down":False}
 		
 	def update(self, player):
+		self.rect = pygame.Rect(self.position[0], self.position[1], self.width, self.height)
 		self.playerTouching = {"left":False, "right":False, "up":False, "down":False}
 		
-		if player.position[1]+player.size > self.position[1] and player.position[1] < self.position[1]+self.height:
-			if player.position[0] < self.position[0]+self.width and player.position[0]+player.size > self.position[0]:
+		if self.rect.colliderect(player.rect):
+			if player.position[1]+player.size < self.position[1]+5:
+				self.playerTouching["down"] = True
+				self.position[1] = player.position[1]+player.size
+			
+			elif player.position[0] > self.position[0]+self.width-5:
+				self.playerTouching["left"] = True
+				self.position[0] = player.position[0]-self.width
+			
+			elif player.position[0]+player.size < self.position[0]+5:
+				self.playerTouching["right"] = True
+				self.position[0] = player.position[0]+player.size
 				
-				if player.position[1]+player.size < self.position[1]+5:
-					self.playerTouching["down"] = True
-					self.position[1] = player.position[1]+player.size
-				
-				elif player.position[0] > self.position[0]+self.width-5:
-					self.playerTouching["left"] = True
-					self.position[0] = player.position[0]-self.width
-				
-				elif player.position[0]+player.size < self.position[0]+5:
-					self.playerTouching["right"] = True
-					self.position[0] = player.position[0]+player.size
-					
-				elif player.position[1] > self.position[1]+self.height-5:
-					self.position[1] = player.position[1]-self.height
-					self.playerTouching["up"] = True
+			elif player.position[1] > self.position[1]+self.height-5:
+				self.position[1] = player.position[1]-self.height
+				self.playerTouching["up"] = True
 
 
 		if self.position[1]+self.size > constant.HEIGHT: 
