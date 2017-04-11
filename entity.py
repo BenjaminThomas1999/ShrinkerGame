@@ -9,7 +9,7 @@ class Player(object):
 		self.moving = {"left":False, "right":False, "up":False, "down":False}
 		self.growing = False
 		self.shrinking = False
-		self.minSize = 5
+		self.minSize = 4
 		self.maxSize = 60
 		self.sens = 0.05
 		self.terminal = 5
